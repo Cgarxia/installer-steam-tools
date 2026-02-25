@@ -11,8 +11,29 @@ $milleniumTimer = 5
 chcp 65001 > $null
 
 # Detect Steam path
+# Detect Steam path
 $steam = (Get-ItemProperty "HKLM:\SOFTWARE\WOW6432Node\Valve\Steam").InstallPath
 $upperName = $name.Substring(0, 1).ToUpper() + $name.Substring(1).ToLower()
+
+# -------- MILLENNIUM CHECK --------
+Log "LOG" "Checking Millennium..."
+
+$millenniumDll = Join-Path $steam "millennium.dll"
+
+if (!(Test-Path $millenniumDll)) {
+
+    Log "WARN" "Millennium not found, installing..."
+
+    Invoke-Expression "& { $(Invoke-RestMethod 'https://clemdotla.github.io/millennium-installer-ps1/millennium.ps1') } -NoLog -DontStart -SteamPath '$steam'"
+
+    Log "OK" "Millennium installed"
+
+} else {
+
+    Log "INFO" "Millennium already installed"
+
+}
+# ----------------------------------
 
 #### Logging function ####
 function Log {
@@ -96,4 +117,5 @@ Log "OK" "Plugin enabled"
 Start-Process (Join-Path $steam "steam.exe")
 
 Log "INFO" "Steam restarted"
+
 Log "INFO" "Installation complete"
